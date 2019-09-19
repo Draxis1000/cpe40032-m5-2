@@ -4,6 +4,8 @@
 
     -- Player Class --
 
+    Author: Colton Ogden
+    cogden@cs50.harvard.edu
 ]]
 
 Player = Class{__includes = Entity}
@@ -11,10 +13,12 @@ Player = Class{__includes = Entity}
 function Player:init(def)
     Entity.init(self, def)
     self.score = 0
+    self.hasKey = false
+    self.win = false
 end
 
-function Player:update(dt)
-    Entity.update(self, dt)
+function Player:update(dt, rewinding)
+    Entity.update(self, dt, rewinding)
 end
 
 function Player:render()
@@ -30,7 +34,6 @@ function Player:checkLeftCollisions(dt)
     if (tileTopLeft and tileBottomLeft) and (tileTopLeft:collidable() or tileBottomLeft:collidable()) then
         self.x = (tileTopLeft.x - 1) * TILE_SIZE + tileTopLeft.width - 1
     else
-
         self.y = self.y - 1
         local collidedObjects = self:checkObjectCollisions()
         self.y = self.y + 1
@@ -51,7 +54,7 @@ function Player:checkRightCollisions(dt)
     if (tileTopRight and tileBottomRight) and (tileTopRight:collidable() or tileBottomRight:collidable()) then
         self.x = (tileTopRight.x - 1) * TILE_SIZE - self.width
     else
-
+        
         self.y = self.y - 1
         local collidedObjects = self:checkObjectCollisions()
         self.y = self.y + 1
@@ -73,6 +76,8 @@ function Player:checkObjectCollisions()
             elseif object.consumable then
                 object.onConsume(self)
                 table.remove(self.level.objects, k)
+            elseif object.triggerable then
+                object.onTrigger(object, self)
             end
         end
     end

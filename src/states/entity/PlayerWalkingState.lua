@@ -2,6 +2,8 @@
     CMPE40032
     Super Mario Bros. Remake
 
+    Author: Colton Ogden
+    cogden@cs50.harvard.edu
 ]]
 
 PlayerWalkingState = Class{__includes = BaseState}

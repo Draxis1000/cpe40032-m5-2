@@ -4,6 +4,8 @@
 
     -- SnailMovingState Class --
 
+    Author: Colton Ogden
+    cogden@cs50.harvard.edu
 ]]
 
 SnailMovingState = Class{__includes = BaseState}

@@ -4,6 +4,8 @@
 
     -- StartState Class --
 
+    Author: Colton Ogden
+    cogden@cs50.harvard.edu
 
     Helper functions for writing Match-3.
 ]]
@@ -44,7 +46,7 @@ function GenerateTileSets(quads, setsX, setsY, sizeX, sizeY)
     -- for each tile set on the X and Y
     for tilesetY = 1, setsY do
         for tilesetX = 1, setsX do
-
+            
             -- tileset table
             table.insert(tilesets, {})
             tableCounter = tableCounter + 1

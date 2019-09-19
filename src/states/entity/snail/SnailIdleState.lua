@@ -4,6 +4,8 @@
 
     -- SnailIdleState Class --
 
+    Author: Colton Ogden
+    cogden@cs50.harvard.edu
 ]]
 
 SnailIdleState = Class{__includes = BaseState}
@@ -25,6 +27,7 @@ function SnailIdleState:enter(params)
 end
 
 function SnailIdleState:update(dt)
+    self.snail.currentAnimation:update(dt)
     if self.waitTimer < self.waitPeriod then
         self.waitTimer = self.waitTimer + dt
     else

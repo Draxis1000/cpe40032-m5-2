@@ -2,6 +2,8 @@
     CMPE40032
     Super Mario Bros. Remake
 
+    Author: Colton Ogden
+    cogden@cs50.harvard.edu
 ]]
 
 PlayerIdleState = Class{__includes = BaseState}
@@ -18,6 +20,7 @@ function PlayerIdleState:init(player)
 end
 
 function PlayerIdleState:update(dt)
+    self.player.currentAnimation:update(dt)
     if love.keyboard.isDown('left') or love.keyboard.isDown('right') then
         self.player:changeState('walking')
     end

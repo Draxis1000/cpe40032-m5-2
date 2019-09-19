@@ -10,7 +10,7 @@ PlayState = Class{__includes = BaseState}
 function PlayState:init()
     self.camX = 0
     self.camY = 0
-    self.level = LevelMaker.generate(100, 10)
+    self.level = LevelMaker.generate(100, 10, 'playstate')
     self.tileMap = self.level.tileMap
     self.background = math.random(3)
     self.backgroundX = 0
@@ -26,7 +26,9 @@ function PlayState:init()
             ['idle'] = function() return PlayerIdleState(self.player) end,
             ['walking'] = function() return PlayerWalkingState(self.player) end,
             ['jump'] = function() return PlayerJumpState(self.player, self.gravityAmount) end,
-            ['falling'] = function() return PlayerFallingState(self.player, self.gravityAmount) end
+            ['falling'] = function() return PlayerFallingState(self.player, self.gravityAmount) end,
+            ['pause'] = function() return PlayerPausedState(self.player) end,
+            ['animation'] = function() return PlayerAnimationState(self.player, self.gravityAmount) end,
         },
         map = self.tileMap,
         level = self.level
@@ -35,26 +37,37 @@ function PlayState:init()
     self:spawnEnemies()
 
     self.player:changeState('falling')
+
+    self.rewinding = false
 end
 
 function PlayState:update(dt)
+
+    if love.keyboard.isDown('m') then
+        self.rewinding = true
+    else
+        self.rewinding = false
+    end
+    
     Timer.update(dt)
 
     -- remove any nils from pickups, etc.
     self.level:clear()
 
     -- update player and level
-    self.player:update(dt)
-    self.level:update(dt)
-
-    -- constrain player X no matter which state
-    if self.player.x <= 0 then
-        self.player.x = 0
-    elseif self.player.x > TILE_SIZE * self.tileMap.width - self.player.width then
-        self.player.x = TILE_SIZE * self.tileMap.width - self.player.width
-    end
+    self.player:update(dt, self.rewinding)
+    self.level:update(dt,self.rewinding)
 
     self:updateCamera()
+
+    -- constrain player X no matter which state
+    if self.player.win == false then
+        if self.player.x <= 0 then
+            self.player.x = 0
+        elseif self.player.x > TILE_SIZE * self.tileMap.width - self.player.width then
+            self.player.x = TILE_SIZE * self.tileMap.width - self.player.width
+        end
+    end
 end
 
 function PlayState:render()
@@ -65,21 +78,34 @@ function PlayState:render()
     love.graphics.draw(gTextures['backgrounds'], gFrames['backgrounds'][self.background], math.floor(-self.backgroundX + 256), 0)
     love.graphics.draw(gTextures['backgrounds'], gFrames['backgrounds'][self.background], math.floor(-self.backgroundX + 256),
         gTextures['backgrounds']:getHeight() / 3 * 2, 0, 1, -1)
-
+    
     -- translate the entire view of the scene to emulate a camera
     love.graphics.translate(-math.floor(self.camX), -math.floor(self.camY))
-
+    
     self.level:render()
 
     self.player:render()
+
     love.graphics.pop()
 
+    if self.player.hasKey then
+        love.graphics.draw(gTextures['keys_and_locks'], gFrames['keys_and_locks'][1], 3, 20)
+    end
+    
     -- render score
     love.graphics.setFont(gFonts['medium'])
     love.graphics.setColor(0, 0, 0, 255)
     love.graphics.print(tostring(self.player.score), 5, 5)
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.print(tostring(self.player.score), 4, 4)
+
+    if self.player.win then
+        love.graphics.setFont(gFonts['title'])
+        love.graphics.setColor(0, 0, 0, 255)
+        love.graphics.printf('Level Complete!', 1, VIRTUAL_HEIGHT / 2 - 40 + 1, VIRTUAL_WIDTH, 'center')
+        love.graphics.setColor(255, 255, 255, 255)
+        love.graphics.printf('Level Complete!', 0, VIRTUAL_HEIGHT / 2 - 40, VIRTUAL_WIDTH, 'center')
+    end
 end
 
 function PlayState:updateCamera()
@@ -110,7 +136,7 @@ function PlayState:spawnEnemies()
 
                     -- random chance, 1 in 20
                     if math.random(20) == 1 then
-
+                        
                         -- instantiate snail, declaring in advance so we can pass it into state machine
                         local snail
                         snail = Snail {

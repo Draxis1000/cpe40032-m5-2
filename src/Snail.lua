@@ -4,6 +4,8 @@
 
     -- Snail Class --
 
+    Author: Colton Ogden
+    cogden@cs50.harvard.edu
 ]]
 
 Snail = Class{__includes = Entity}

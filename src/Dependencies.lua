@@ -2,6 +2,8 @@
     CMPE40032
     Super Mario Bros. Remake
 
+    Author: Colton Ogden
+    cogden@cs50.harvard.edu
 
     -- Dependencies --
 
@@ -36,9 +38,13 @@ require 'src/states/entity/PlayerIdleState'
 require 'src/states/entity/PlayerJumpState'
 require 'src/states/entity/PlayerWalkingState'
 
+require 'src/states/entity/PlayerPausedState'
+require 'src/states/entity/PlayerAnimationState'
+
 require 'src/states/entity/snail/SnailChasingState'
 require 'src/states/entity/snail/SnailIdleState'
 require 'src/states/entity/snail/SnailMovingState'
+require 'src/Step'
 
 -- general
 require 'src/Animation'
@@ -51,6 +57,7 @@ require 'src/Snail'
 require 'src/Tile'
 require 'src/TileMap'
 
+require 'src/GameObjectAnimable'
 
 gSounds = {
     ['jump'] = love.audio.newSource('sounds/jump.wav'),
@@ -60,7 +67,10 @@ gSounds = {
     ['pickup'] = love.audio.newSource('sounds/pickup.wav'),
     ['empty-block'] = love.audio.newSource('sounds/empty-block.wav'),
     ['kill'] = love.audio.newSource('sounds/kill.wav'),
-    ['kill2'] = love.audio.newSource('sounds/kill2.wav')
+    ['kill2'] = love.audio.newSource('sounds/kill2.wav'),
+    
+    ['unlock'] = love.audio.newSource('sounds/unlocked.mp3'),
+    ['victory'] = love.audio.newSource('sounds/victory.mp3'),
 }
 
 gTextures = {
@@ -71,32 +81,42 @@ gTextures = {
     ['gems'] = love.graphics.newImage('graphics/gems.png'),
     ['backgrounds'] = love.graphics.newImage('graphics/backgrounds.png'),
     ['green-alien'] = love.graphics.newImage('graphics/green_alien.png'),
-    ['creatures'] = love.graphics.newImage('graphics/creatures.png')
+    ['creatures'] = love.graphics.newImage('graphics/creatures.png'),
+    ['keys_and_locks'] = love.graphics.newImage('graphics/keys_and_locks.png'),
+    ['poles'] = love.graphics.newImage('graphics/flags.png'),
+    ['flags'] = love.graphics.newImage('graphics/flags.png'),
+    ['mushrooms'] = love.graphics.newImage('graphics/mushrooms.png')
 }
 
 gFrames = {
     ['tiles'] = GenerateQuads(gTextures['tiles'], TILE_SIZE, TILE_SIZE),
-
+    
     ['toppers'] = GenerateQuads(gTextures['toppers'], TILE_SIZE, TILE_SIZE),
-
+    
     ['bushes'] = GenerateQuads(gTextures['bushes'], 16, 16),
     ['jump-blocks'] = GenerateQuads(gTextures['jump-blocks'], 16, 16),
     ['gems'] = GenerateQuads(gTextures['gems'], 16, 16),
     ['backgrounds'] = GenerateQuads(gTextures['backgrounds'], 256, 128),
     ['green-alien'] = GenerateQuads(gTextures['green-alien'], 16, 20),
-    ['creatures'] = GenerateQuads(gTextures['creatures'], 16, 16)
+    ['creatures'] = GenerateQuads(gTextures['creatures'], 16, 16),
+ 
+    ['keys_and_locks'] = GenerateQuads(gTextures['keys_and_locks'], 16, 16),
+
+    ['poles'] = GenerateQuads(gTextures['flags'], 16, 48),
+    ['flags'] = GenerateQuads(gTextures['flags'], 16, 16),
+    ['mushrooms'] = GenerateQuads(gTextures['mushrooms'], 8, 8),
 }
 
 -- these need to be added after gFrames is initialized because they refer to gFrames from within
-gFrames['tilesets'] = GenerateTileSets(gFrames['tiles'],
+gFrames['tilesets'] = GenerateTileSets(gFrames['tiles'], 
     TILE_SETS_WIDE, TILE_SETS_TALL, TILE_SET_WIDTH, TILE_SET_HEIGHT)
 
-gFrames['toppersets'] = GenerateTileSets(gFrames['toppers'],
+gFrames['toppersets'] = GenerateTileSets(gFrames['toppers'], 
     TOPPER_SETS_WIDE, TOPPER_SETS_TALL, TILE_SET_WIDTH, TILE_SET_HEIGHT)
 
 gFonts = {
     ['small'] = love.graphics.newFont('fonts/font.ttf', 8),
     ['medium'] = love.graphics.newFont('fonts/font.ttf', 16),
-    ['large'] = love.graphics.newFont('fonts/font.ttf', 32),
-    ['title'] = love.graphics.newFont('fonts/ArcadeAlternate.ttf', 32)
+    ['large'] = love.graphics.newFont('fonts/font.ttf', 29),
+    ['title'] = love.graphics.newFont('fonts/ArcadeAlternate.ttf', 29)
 }

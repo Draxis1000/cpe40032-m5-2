@@ -2,7 +2,9 @@
     CMPE40032
     Super Mario Bros. Remake
 
-
+    Author: Colton Ogden
+    cogden@cs50.harvard.edu
+    
     A classic platformer in the style of Super Mario Bros., using a free
     art pack. Super Mario Bros. was instrumental in the resurgence of video
     games in the mid-80s, following the infamous crash shortly after the
@@ -22,10 +24,10 @@ require 'src/Dependencies'
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     love.graphics.setFont(gFonts['medium'])
-    love.window.setTitle(' Super Alien Bros.')
+    love.window.setTitle(' Super Alien Bros ')
 
     math.randomseed(os.time())
-
+    
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
         vsync = true,

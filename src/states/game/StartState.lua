@@ -4,12 +4,14 @@
 
     -- StartState Class --
 
+    Author: Colton Ogden
+    cogden@cs50.harvard.edu
 ]]
 
 StartState = Class{__includes = BaseState}
 
 function StartState:init()
-    self.map = LevelMaker.generate(100, 10)
+    self.map = LevelMaker.generate(100, 10, 'startstate')
     self.background = math.random(3)
 end
 
@@ -27,9 +29,9 @@ function StartState:render()
 
     love.graphics.setFont(gFonts['title'])
     love.graphics.setColor(0, 0, 0, 255)
-    love.graphics.printf(' Super Alien Bros.', 1, VIRTUAL_HEIGHT / 2 - 40 + 1, VIRTUAL_WIDTH, 'center')
+    love.graphics.printf(' Super Alien Bros ', 1, VIRTUAL_HEIGHT / 2 - 40 + 1, VIRTUAL_WIDTH, 'center')
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.printf(' Super Alien Bros.', 0, VIRTUAL_HEIGHT / 2 - 40, VIRTUAL_WIDTH, 'center')
+    love.graphics.printf(' Super Alien Bros ', 0, VIRTUAL_HEIGHT / 2 - 40, VIRTUAL_WIDTH, 'center')
 
     love.graphics.setFont(gFonts['medium'])
     love.graphics.setColor(0, 0, 0, 255)
